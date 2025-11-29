@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SessionStart hook -- plugin-architecture-dev
+#
+# Injects a compact SDLC phase index so the agent knows the pluggable,
+# multi-agent SDLC pipeline exists and how to enter it. Read-only and
+# side-effect-free: it never creates .sdlc/ (the orchestrator does that when a
+# run actually starts) and never probes MCP config (the orchestrator detects
+# accelerators authoritatively from its live tool list). Fast by design.
+#
+# Uses printf (not heredoc) for output to avoid the bash 5.3+ heredoc hang.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+phase_index="$(cat "${SCRIPT_DIR}/phase-index.txt" 2>/dev/null || printf '')"
+
+# Escape a string for embedding inside a JSON string value. Each ${s//old/new}
+# is one C-level pass -- far faster than a character loop.
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+phase_index_esc="$(escape_for_json "$phase_index")"
+
+# intro/outro carry literal \n sequences (already JSON-ready); only the dynamic
+# phase index (real newlines) goes through escape_for_json.
+intro='<sdlc-available>\nThis workspace can be driven end-to-end by the `plugin-architecture-dev` plugin: a language-agnostic, multi-agent SDLC (research -> planning -> architecting -> implementation -> review -> testing -> hard evidence gate). For any build / change / design / fix request, enter via `/sdlc <goal>` or the `plugin-architecture-dev:sdlc-orchestrator` skill.\n\n'
+outro='\n\nEach phase fans out a NAMED ROSTER of subagents (fresh context per reviewer) and a run cannot complete until the Evidence-Based Hard Quality Gate passes -- as-user proof over the real interface, enforced by the Stop hook. Accelerators (codemunch, memory, web-proof, second-opinion, web-research) are used only if present, with portable fallbacks.\n</sdlc-available>'
+
+session_context="${intro}${phase_index_esc}${outro}"
+
+# Emit only the field the current platform consumes (see superpowers #571).
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0

@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# Stop / SubagentStop hook -- Evidence-Based Hard Quality Gate.
+#
+# Dormant unless a run is active (.sdlc/active present), so it never interferes
+# with non-SDLC work.
+#
+#   Stop:         BLOCKS completion until a FRESH evidence file with status=pass
+#                 exists for the active run; clears .sdlc/active on pass.
+#   SubagentStop: never blocks -- subagents are workers, and blocking them would
+#                 deadlock roster fan-out (evidence only exists at the very end).
+#                 Per-phase artifact gates are enforced model-side by the
+#                 orchestrator skill, not here.
+#
+# Escape a genuinely stuck run with:  /sdlc-status --abort
+# (removes .sdlc/active, releasing the gate without faking evidence).
+#
+# A block is expressed as JSON on stdout with exit 0 (Claude Code reads
+# {"decision":"block","reason":...}); this hook never uses exit-code blocking.
+
+set -euo pipefail
+
+input="$(cat 2>/dev/null || printf '')"
+
+# --- best-effort field extraction (python3 preferred, sed fallback) ---
+get_field() {
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s' "$input" | python3 -c 'import sys,json
+try:
+    d=json.load(sys.stdin); v=d.get(sys.argv[1],"")
+    print(str(v).lower() if isinstance(v,bool) else v)
+except Exception:
+    pass' "$1" 2>/dev/null || true
+  else
+    printf '%s' "$input" | sed -n "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"\{0,1\}\([^\",}]*\)\"\{0,1\}.*/\1/p" 2>/dev/null | head -n1 || true
+  fi
+}
+
+event="$(get_field hook_event_name)"
+
+# SubagentStop is intentionally non-blocking.
+if [ "$event" = "SubagentStop" ]; then
+  exit 0
+fi
+
+# Resolve the project directory.
+proj_dir="${CLAUDE_PROJECT_DIR:-}"
+[ -z "$proj_dir" ] && proj_dir="$(get_field cwd)"
+[ -z "$proj_dir" ] && proj_dir="$PWD"
+
+active_file="${proj_dir}/.sdlc/active"
+[ -f "$active_file" ] || exit 0   # no active run -> gate dormant
+
+run_id="$(cat "$active_file" 2>/dev/null | tr -d '[:space:]' || true)"
+evidence_dir="${proj_dir}/.sdlc/evidence"
+log_dir="${proj_dir}/.sdlc/log"
+log_file="${log_dir}/events.ndjson"
+ts="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || printf 'unknown')"
+
+log_event() { # $1=event $2=detail
+  [ -d "$log_dir" ] || mkdir -p "$log_dir" 2>/dev/null || return 0
+  printf '{"ts":"%s","phase":"quality-gate","event":"%s","detail":"%s"}\n' "$ts" "$1" "$2" >> "$log_file" 2>/dev/null || true
+}
+
+block() { # $1=reason (already plain text)
+  local r="$1"
+  r="${r//\\/\\\\}"
+  r="${r//\"/\\\"}"
+  r="${r//$'\n'/\\n}"
+  printf '{"decision":"block","reason":"%s"}\n' "$r"
+  exit 0
+}
+
+# --- locate the newest evidence file (prefer the run-matched one) ---
+evidence_file=""
+if [ -d "$evidence_dir" ]; then
+  if [ -n "$run_id" ] && [ -f "${evidence_dir}/${run_id}.json" ]; then
+    evidence_file="${evidence_dir}/${run_id}.json"
+  else
+    evidence_file="$(ls -1t "${evidence_dir}"/*.json 2>/dev/null | head -n1 || true)"
+  fi
+fi
+
+if [ -z "$evidence_file" ] || [ ! -f "$evidence_file" ]; then
+  log_event "gate_block" "no_evidence"
+  block "SDLC hard gate: no evidence for run ${run_id:-<run>}. Run the plugin-architecture-dev:phase-quality-gate skill (or /quality-gate) to exercise the software AS A USER over its real interface -- exhaust expected behaviors including failure paths -- and write .sdlc/evidence/${run_id:-<run>}.json {interface, behaviors[expected/actual/pass/artifacts], as_user:true, status:\"pass\"}. To abandon a stuck run: /sdlc-status --abort."
+fi
+
+# --- freshness: any source file newer than the evidence => stale ---
+stale="$(find "$proj_dir" -type f -not -path '*/.sdlc/*' -not -path '*/.git/*' -newer "$evidence_file" -print -quit 2>/dev/null || true)"
+if [ -n "$stale" ]; then
+  log_event "gate_block" "stale_evidence"
+  block "SDLC hard gate: evidence is STALE -- source changed after it was produced (${stale#"$proj_dir"/}). Re-run /quality-gate to regenerate as-user evidence for the current code, then complete. To abandon a stuck run: /sdlc-status --abort."
+fi
+
+# --- content validation (rigorous with jq, heuristic fallback otherwise) ---
+pass=1
+if command -v jq >/dev/null 2>&1; then
+  jq -e '
+    (.status == "pass")
+    and (.as_user == true)
+    and ((.behaviors | length) >= 1)
+    and (all(.behaviors[]; (.pass == true) and ((.artifacts | length) >= 1)))
+  ' "$evidence_file" >/dev/null 2>&1 || pass=0
+else
+  grep -Eq '"status"[[:space:]]*:[[:space:]]*"pass"' "$evidence_file" 2>/dev/null || pass=0
+  grep -Eq '"as_user"[[:space:]]*:[[:space:]]*true' "$evidence_file" 2>/dev/null || pass=0
+  grep -Eq '"behaviors"' "$evidence_file" 2>/dev/null || pass=0
+fi
+
+if [ "$pass" -ne 1 ]; then
+  log_event "gate_block" "evidence_not_pass"
+  block "SDLC hard gate: evidence exists but does NOT pass. Required: status=\"pass\", as_user=true, >=1 behavior, and every behavior pass=true with >=1 artifact. Fix the underlying failures (do not fake evidence) or regenerate via /quality-gate. To abandon a stuck run: /sdlc-status --abort."
+fi
+
+# --- PASS: release the gate ---
+rm -f "$active_file" 2>/dev/null || true
+log_event "gate_pass" "evidence=${evidence_file##*/}"
+exit 0

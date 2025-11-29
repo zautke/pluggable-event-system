@@ -1,0 +1,8 @@
+SDLC phases (plugin-architecture-dev) — each is a HARD GATE; advance only when its artifact exists:
+1 research-discovery -> .sdlc/research/*.md   (research-team; >=2 modalities per claim, citation-anchored)
+2 planning           -> .sdlc/plans/*.md      (planning-team; task DAG + success criteria + interface map)
+3 architecting       -> .sdlc/adr/*.md        (architecture-team; one ADR per decision; skippable if no new structure)
+4 implementation     -> .sdlc/impl/*.md       (implementation-team; test-first; notes + blast radius per task)
+5 review             -> .sdlc/review/*.md     (review-team: spec + code-quality + security; block on blockers)
+6 testing            -> .sdlc/testing/*.md    (testing-team; every expected behavior maps to a test)
+7 quality-gate       -> .sdlc/evidence/<run>.json (verification-team; AS-USER proof; Stop hook enforces status=pass)

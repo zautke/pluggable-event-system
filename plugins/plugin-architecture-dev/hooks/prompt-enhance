@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# UserPromptSubmit hook -- master metaprompt / SDLC router.
+#
+# When a prompt shows software-delivery intent (or is an explicit /sdlc call),
+# inject a compact routing directive that reshapes the request into the
+# sdlc-orchestrator: classify entry phase, assemble a named roster, honor the
+# hard phase gates + the evidence gate. Non-SDLC prompts are left untouched, so
+# ordinary chat is unaffected.
+#
+# Disable per-user:    ~/.claude/.sdlc-metaprompt-off
+# Disable per-project: <project>/.sdlc/metaprompt-off
+#
+# Kept deliberately cheap (target < ~300ms): one stdin read, one intent match,
+# two small file reads only on a match. Fails open (no injection) on any error.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+input="$(cat 2>/dev/null || printf '')"
+
+proj_dir="${CLAUDE_PROJECT_DIR:-.}"
+home_off="${HOME:-}/.claude/.sdlc-metaprompt-off"
+proj_off="${proj_dir}/.sdlc/metaprompt-off"
+if [ -f "$home_off" ] || [ -f "$proj_off" ]; then
+  exit 0
+fi
+
+# --- extract the prompt text (robust with python3, sed fallback) ---
+if command -v python3 >/dev/null 2>&1; then
+  prompt="$(printf '%s' "$input" | python3 -c 'import sys,json
+try:
+    print(json.load(sys.stdin).get("prompt",""))
+except Exception:
+    pass' 2>/dev/null || true)"
+else
+  prompt="$(printf '%s' "$input" | sed -n 's/.*"prompt"[[:space:]]*:[[:space:]]*"\(.*\)".*/\1/p' 2>/dev/null | head -n1 || true)"
+fi
+
+lc="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]' 2>/dev/null || printf '')"
+[ -z "$lc" ] && exit 0
+
+# --- intent match: explicit /sdlc, or SDLC-leaning verbs/phrases ---
+# Curated to favor genuine delivery work over common trivial edits (create/add/
+# fix alone do NOT trigger); the injected directive is conditional, so the rare
+# false positive is low-harm.
+intent=0
+case "$lc" in
+  /sdlc|/sdlc\ *) intent=1 ;;
+esac
+if [ "$intent" -eq 0 ]; then
+  if printf '%s' "$lc" | grep -Eq '\b(build|implement|ship|develop|scaffold|refactor|re-?architect|redesign|architect|migrate|integrate|productioni[sz]e)\b|\b(end[ -]to[ -]end|full sdlc|quality gate|greenfield|from scratch)\b|\bdesign (a|an|the|our|my) [a-z]+ (system|feature|api|cli|service|plugin|pipeline|architecture)\b'; then
+    intent=1
+  fi
+fi
+[ "$intent" -eq 0 ] && exit 0
+
+# --- build the injection ---
+phase_index="$(cat "${SCRIPT_DIR}/phase-index.txt" 2>/dev/null || printf '')"
+
+caps_file="${proj_dir}/.sdlc/capabilities.json"
+if [ -f "$caps_file" ]; then
+  caps='recorded in .sdlc/capabilities.json (reuse; do not re-probe)'
+else
+  caps='the orchestrator will detect accelerators (codemunch / memory / web-proof / second-opinion / web-research) from its live tools and record .sdlc/capabilities.json; degrade gracefully to portable fallbacks when absent'
+fi
+
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+phase_index_esc="$(escape_for_json "$phase_index")"
+caps_esc="$(escape_for_json "$caps")"
+
+intro='<sdlc-router>\nThis looks like software-delivery work. Unless it is trivial or read-only, drive it through the full SDLC via the `plugin-architecture-dev:sdlc-orchestrator` skill (equivalently `/sdlc <goal>`):\n- Classify the ENTRY PHASE (skip phases whose inputs are already satisfied; record the skip rationale).\n- Open `.sdlc/run-<id>.json` + `.sdlc/active`; drive each phase as a HARD GATE (advance only when its artifact exists).\n- Assemble the NAMED ROSTER for each phase and FAN OUT subagents in parallel (one message, multiple Task calls; fresh context per reviewer).\n- Do NOT declare done until the Evidence-Based Hard Quality Gate passes: exercise the software AS A USER over its real interface, exhaust expected behaviors incl. failure paths, and write `.sdlc/evidence/<run>.json` (status=pass). The Stop hook enforces this.\n\n'
+outro='\n\nCapabilities this run: '
+tail='\n</sdlc-router>'
+
+injection="${intro}${phase_index_esc}${outro}${caps_esc}${tail}"
+
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "additional_context": "%s"\n}\n' "$injection"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "UserPromptSubmit",\n    "additionalContext": "%s"\n  }\n}\n' "$injection"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$injection"
+fi
+
+exit 0

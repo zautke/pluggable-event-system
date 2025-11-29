@@ -1,0 +1,28 @@
+{
+  "name": "pluggable-event-system",
+  "owner": {
+    "name": "largo",
+    "email": "me@lukezautke.com"
+  },
+  "metadata": {
+    "description": "Marketplace hosting the plugin-architecture-dev SDLC master plugin.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "plugin-architecture-dev",
+      "source": "./plugins/plugin-architecture-dev",
+      "description": "Language-agnostic, full-SDLC master plugin. Multi-agent teams and named rosters drive research -> planning -> architecting -> implementation -> review -> testing -> a hook-enforced, evidence-based hard quality gate. Internally pluggable (phases are contribution points, hooks are the event bus).",
+      "version": "0.1.0",
+      "keywords": [
+        "sdlc",
+        "orchestration",
+        "multi-agent",
+        "pluggable-architecture",
+        "evidence-based-verification",
+        "quality-gate",
+        "language-agnostic"
+      ]
+    }
+  ]
+}

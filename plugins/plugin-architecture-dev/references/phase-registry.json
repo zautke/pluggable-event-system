@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.0",
+  "description": "Contribution-point manifest for the SDLC. Each phase is a plugin-internal contribution point: a skill (the worker instructions), a command (the manual entry point), a named roster (the agents fanned out), an activation predicate (when the orchestrator may enter here), and an exit gate (the artifact that must exist before advancing). Add a phase by adding a skill + agent(s) + one entry here. Core files never change. This is the same lazy-activation / contribution-point pattern the plugin teaches for target systems.",
+  "artifact_root": ".sdlc",
+  "state_files": {
+    "active": ".sdlc/active",
+    "run": ".sdlc/run-<id>.json",
+    "capabilities": ".sdlc/capabilities.json",
+    "log": ".sdlc/log/events.ndjson"
+  },
+  "phases": [
+    {
+      "id": "research-discovery",
+      "order": 1,
+      "title": "Research & Discovery",
+      "skill": "plugin-architecture-dev:phase-research-discovery",
+      "command": "/research",
+      "roster": "research-team",
+      "activation": "intent matches investigate|research|discover|evaluate|compare|unknown-domain OR upstream unknowns block planning",
+      "inputs": ["goal (from .sdlc/run-<id>.json)"],
+      "artifact_glob": ".sdlc/research/*.md",
+      "exit_criteria": "One citation-anchored brief per open question; each cited claim has >=2 modalities OR is explicitly marked low-confidence; key unknowns resolved or deferred with rationale.",
+      "gate": "artifact-exists",
+      "next": "planning",
+      "skippable_when": "goal is fully specified and domain is well understood (record the skip rationale in the run log)"
+    },
+    {
+      "id": "planning",
+      "order": 2,
+      "title": "Planning",
+      "skill": "plugin-architecture-dev:phase-planning",
+      "command": "/plan",
+      "roster": "planning-team",
+      "activation": "research artifacts exist OR goal is well specified",
+      "inputs": [".sdlc/research/*.md", "goal"],
+      "artifact_glob": ".sdlc/plans/*.md",
+      "exit_criteria": "A plan with a task DAG (nodes = tasks, edges = dependencies), success criteria, and a mapping of each task to a target interface for later evidence.",
+      "gate": "artifact-exists",
+      "next": "architecting"
+    },
+    {
+      "id": "architecting",
+      "order": 3,
+      "title": "Architecting",
+      "skill": "plugin-architecture-dev:phase-architecting",
+      "command": "/architect",
+      "roster": "architecture-team",
+      "activation": "a plan exists AND the work introduces or changes structure/interfaces",
+      "inputs": [".sdlc/plans/*.md", ".sdlc/research/*.md"],
+      "artifact_glob": ".sdlc/adr/*.md",
+      "exit_criteria": "One ADR per non-trivial decision (context, options, decision, consequences). If target is an extensible/plugin system, the pluggable-architecture principles checklist is applied and recorded.",
+      "gate": "artifact-exists",
+      "next": "implementation",
+      "skippable_when": "change is small and introduces no new interfaces or cross-cutting structure"
+    },
+    {
+      "id": "implementation",
+      "order": 4,
+      "title": "Implementation",
+      "skill": "plugin-architecture-dev:phase-implementation",
+      "command": "/implement",
+      "roster": "implementation-team",
+      "activation": "a plan (and ADRs when applicable) exist",
+      "inputs": [".sdlc/plans/*.md", ".sdlc/adr/*.md"],
+      "artifact_glob": ".sdlc/impl/*.md",
+      "exit_criteria": "All plan tasks implemented; per-task implementation notes record files touched and blast radius; code compiles/builds where a build exists.",
+      "gate": "artifact-exists",
+      "next": "review"
+    },
+    {
+      "id": "review",
+      "order": 5,
+      "title": "Review",
+      "skill": "plugin-architecture-dev:phase-review",
+      "command": "/review",
+      "roster": "review-team",
+      "activation": "implementation artifacts exist",
+      "inputs": [".sdlc/impl/*.md", ".sdlc/plans/*.md", ".sdlc/adr/*.md"],
+      "artifact_glob": ".sdlc/review/*.md",
+      "exit_criteria": "spec-reviewer, code-quality-reviewer, and security-reviewer have each reported; every finding is resolved or explicitly waived with rationale; no unresolved blocker-severity findings.",
+      "gate": "artifact-exists-and-no-open-blockers",
+      "next": "testing"
+    },
+    {
+      "id": "testing",
+      "order": 6,
+      "title": "Testing",
+      "skill": "plugin-architecture-dev:phase-testing",
+      "command": "/test",
+      "roster": "testing-team",
+      "activation": "review passed",
+      "inputs": [".sdlc/review/*.md", ".sdlc/plans/*.md"],
+      "artifact_glob": ".sdlc/testing/*.md",
+      "exit_criteria": "A test suite exists and runs; each expected behavior from the plan maps to at least one test; suite is green or every failure is triaged.",
+      "gate": "artifact-exists",
+      "next": "quality-gate"
+    },
+    {
+      "id": "quality-gate",
+      "order": 7,
+      "title": "Evidence-Based Hard Quality Gate",
+      "skill": "plugin-architecture-dev:phase-quality-gate",
+      "command": "/quality-gate",
+      "roster": "verification-team",
+      "activation": "always required before a run may complete",
+      "inputs": ["the running software", ".sdlc/plans/*.md (expected behaviors)"],
+      "artifact_glob": ".sdlc/evidence/*.json",
+      "exit_criteria": "The software was exercised AS A USER over the detected interface; every expected behavior has expected-vs-actual + at least one artifact; evidence status is pass; the file is fresh (newer than the latest source change in this run).",
+      "gate": "evidence-pass (enforced by the Stop/SubagentStop hook)",
+      "next": null,
+      "terminal": true
+    }
+  ],
+  "gates": {
+    "artifact-exists": "The phase's artifact_glob matches at least one file created during this run.",
+    "artifact-exists-and-no-open-blockers": "artifact-exists AND no review finding with severity=blocker remains status=open.",
+    "evidence-pass": "The latest .sdlc/evidence/<run>.json has status=pass, as_user=true, every behavior pass=true with >=1 artifact, and generated_at is newer than the newest source mtime for this run. Enforced by hooks/quality-gate; not advisory."
+  }
+}

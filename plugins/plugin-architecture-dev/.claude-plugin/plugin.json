@@ -1,0 +1,24 @@
+{
+  "name": "plugin-architecture-dev",
+  "description": "Language-agnostic, full-SDLC master plugin. A frontline orchestrator classifies intent and drives seven phases (research, planning, architecting, implementation, review, testing) into a hook-enforced, evidence-based hard quality gate, fanning out named multi-agent rosters at every phase. Internally pluggable: phases are contribution points, hooks are the event bus, capability detection lazily activates optional accelerators (codemunch, basic-memory, chrome, gemini, codex).",
+  "version": "0.1.0",
+  "author": {
+    "name": "largo",
+    "email": "me@lukezautke.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "sdlc",
+    "orchestration",
+    "multi-agent",
+    "pluggable-architecture",
+    "evidence-based-verification",
+    "quality-gate",
+    "language-agnostic",
+    "research",
+    "planning",
+    "architecture",
+    "testing"
+  ],
+  "hooks": "./hooks/hooks.json"
+}
