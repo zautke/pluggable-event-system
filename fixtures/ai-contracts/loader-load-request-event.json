@@ -1,0 +1,25 @@
+{
+  "specversion": "1.0",
+  "id": "evt-loader-load-001",
+  "type": "loader.loadRequest.input.v1",
+  "source": "urn:pluggable-event-system:tests",
+  "time": "2026-07-08T12:00:00Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "requestId": "load-001",
+    "uri": "file:///workspace/docs/readme.md",
+    "mediaType": "text/markdown",
+    "metadata": {
+      "project": "project-a"
+    }
+  },
+  "rag_port": "loadRequest",
+  "rag_direction": "input",
+  "rag_componentkind": "rag.loader",
+  "rag_pluginname": "filesystem-loader",
+  "rag_pluginversion": "1.0.0",
+  "rag_runid": "run-001",
+  "rag_invocationid": "invoke-001",
+  "rag_idempotencykey": "project-a:load:001",
+  "rag_correlationid": "corr-001"
+}

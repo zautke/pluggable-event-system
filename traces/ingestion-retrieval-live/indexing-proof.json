@@ -1,0 +1,570 @@
+{
+  "generatedAt": "2026-07-09T18:59:59.812Z",
+  "repoPath": "/private/tmp/test-repo-run",
+  "dbPath": "/private/tmp/test-repo-run/.repo-context/proof-index.db",
+  "evidenceDir": "/private/tmp/test-repo-run/.repo-context/evidence",
+  "embeddingProvider": "openai",
+  "embeddingModel": "text-embedding-3-small",
+  "status": {
+    "totalFiles": 2,
+    "totalChunks": 2,
+    "totalEmbeddings": 2,
+    "bm25DocumentCount": 2,
+    "embeddingModels": [
+      {
+        "model": "text-embedding-3-small",
+        "count": 2,
+        "dimensions": [
+          1536
+        ]
+      }
+    ],
+    "warnings": []
+  },
+  "records": [
+    {
+      "queryId": "walker",
+      "query": "Where is the repository walker implemented?",
+      "mode": "vector",
+      "expectedFiles": [
+        "src/indexer/walker.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.5665280610887369,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.5592905114144666,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "walker",
+      "query": "Where is the repository walker implemented?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "src/indexer/walker.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.28326403054436844,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.2796452557072333,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "walker",
+      "query": "Where is the repository walker implemented?",
+      "mode": "keyword",
+      "expectedFiles": [
+        "src/indexer/walker.ts"
+      ],
+      "requiredRank": 5,
+      "passed": false,
+      "topHitFile": null,
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 5",
+      "hits": []
+    },
+    {
+      "queryId": "store-results",
+      "query": "How does the indexing pipeline store chunks and embeddings?",
+      "mode": "vector",
+      "expectedFiles": [
+        "src/api/pipeline.ts",
+        "src/storage/store.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.6274662057526313,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.5523507224268596,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "store-results",
+      "query": "How does the indexing pipeline store chunks and embeddings?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "src/api/pipeline.ts",
+        "src/storage/store.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.3137331028763157,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.2761753612134298,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "sqlite-schema",
+      "query": "Which file defines the SQLite chunks schema?",
+      "mode": "vector",
+      "expectedFiles": [
+        "src/storage/schema.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.5648818432131745,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.5409196958025342,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "sqlite-schema",
+      "query": "Which file defines the SQLite chunks schema?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "src/storage/schema.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.28244092160658724,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.2704598479012671,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "sqlite-schema",
+      "query": "Which file defines the SQLite chunks schema?",
+      "mode": "keyword",
+      "expectedFiles": [
+        "src/storage/schema.ts"
+      ],
+      "requiredRank": 5,
+      "passed": false,
+      "topHitFile": null,
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 5",
+      "hits": []
+    },
+    {
+      "queryId": "ollama-embedder",
+      "query": "How are local Ollama embeddings fetched?",
+      "mode": "vector",
+      "expectedFiles": [
+        "src/indexer/embedder.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.5986070248269725,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.5493570275948034,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "ollama-embedder",
+      "query": "How are local Ollama embeddings fetched?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "src/indexer/embedder.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.29930351241348624,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.2746785137974017,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "fallback-chunker",
+      "query": "How does chunking fall back when AST parsing fails?",
+      "mode": "vector",
+      "expectedFiles": [
+        "src/indexer/chunker.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.5927644108324276,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.582781394804024,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "fallback-chunker",
+      "query": "How does chunking fall back when AST parsing fails?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "src/indexer/chunker.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.2963822054162138,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.291390697402012,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "tsx-parser",
+      "query": "How is TSX parsing selected instead of plain TypeScript?",
+      "mode": "vector",
+      "expectedFiles": [
+        "src/indexer/parser.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.6205348678538294,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.6053543561310198,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "tsx-parser",
+      "query": "How is TSX parsing selected instead of plain TypeScript?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "src/indexer/parser.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.3102674339269147,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.3026771780655099,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "walkthrough-doc",
+      "query": "Where is the ingestion pipeline walkthrough documented?",
+      "mode": "vector",
+      "expectedFiles": [
+        "docs/INGESTION_PIPELINE_WALKTHROUGH.md"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.5413580340381645,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.5320961264818918,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "walkthrough-doc",
+      "query": "Where is the ingestion pipeline walkthrough documented?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "docs/INGESTION_PIPELINE_WALKTHROUGH.md"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "retrieval.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.27067901701908226,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        },
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.2660480632409459,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        }
+      ]
+    },
+    {
+      "queryId": "ingestion-route",
+      "query": "Which file implements the ingestion API route?",
+      "mode": "vector",
+      "expectedFiles": [
+        "ui/src/app/api/ingestion/route.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "auth.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.5662917095338805,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        },
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.5599331934108492,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        }
+      ]
+    },
+    {
+      "queryId": "ingestion-route",
+      "query": "Which file implements the ingestion API route?",
+      "mode": "hybrid",
+      "expectedFiles": [
+        "ui/src/app/api/ingestion/route.ts"
+      ],
+      "requiredRank": 3,
+      "passed": false,
+      "topHitFile": "auth.ts",
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 3",
+      "hits": [
+        {
+          "filePath": "auth.ts",
+          "startLine": 1,
+          "endLine": 12,
+          "score": 0.28314585476694026,
+          "preview": "// Authentication middleware\nexport function validateToken(token: string): boolean {\n  if (!token) return false;"
+        },
+        {
+          "filePath": "retrieval.ts",
+          "startLine": 1,
+          "endLine": 10,
+          "score": 0.2799665967054246,
+          "preview": "// Retrieval and ranking functions\nexport function rankByRelevance(hits: any[], query: string) {\n  return hits.sort((a, b) => b.score - a.score);"
+        }
+      ]
+    },
+    {
+      "queryId": "ingestion-route",
+      "query": "Which file implements the ingestion API route?",
+      "mode": "keyword",
+      "expectedFiles": [
+        "ui/src/app/api/ingestion/route.ts"
+      ],
+      "requiredRank": 5,
+      "passed": false,
+      "topHitFile": null,
+      "matchedRank": null,
+      "failureReason": "Expected file not found in top 5",
+      "hits": []
+    }
+  ],
+  "summary": {
+    "passed": false,
+    "totalRuns": 19,
+    "passedRuns": 0,
+    "failedRuns": 19,
+    "vectorPassed": 0,
+    "vectorTotal": 8,
+    "hybridPassed": 0,
+    "hybridTotal": 8,
+    "keywordPassed": 0,
+    "keywordTotal": 3,
+    "failures": [
+      "Hybrid search acceptance failed: 0/8 runs passed (expected all).",
+      "Vector search acceptance failed: 0/8 runs passed (expected at least 6).",
+      "Keyword search acceptance failed: 0/3 runs passed (expected all).",
+      "vector:Where is the repository walker implemented? -> Expected file not found in top 3",
+      "hybrid:Where is the repository walker implemented? -> Expected file not found in top 3",
+      "keyword:Where is the repository walker implemented? -> Expected file not found in top 5",
+      "vector:How does the indexing pipeline store chunks and embeddings? -> Expected file not found in top 3",
+      "hybrid:How does the indexing pipeline store chunks and embeddings? -> Expected file not found in top 3",
+      "vector:Which file defines the SQLite chunks schema? -> Expected file not found in top 3",
+      "hybrid:Which file defines the SQLite chunks schema? -> Expected file not found in top 3",
+      "keyword:Which file defines the SQLite chunks schema? -> Expected file not found in top 5",
+      "vector:How are local Ollama embeddings fetched? -> Expected file not found in top 3",
+      "hybrid:How are local Ollama embeddings fetched? -> Expected file not found in top 3",
+      "vector:How does chunking fall back when AST parsing fails? -> Expected file not found in top 3",
+      "hybrid:How does chunking fall back when AST parsing fails? -> Expected file not found in top 3",
+      "vector:How is TSX parsing selected instead of plain TypeScript? -> Expected file not found in top 3",
+      "hybrid:How is TSX parsing selected instead of plain TypeScript? -> Expected file not found in top 3",
+      "vector:Where is the ingestion pipeline walkthrough documented? -> Expected file not found in top 3",
+      "hybrid:Where is the ingestion pipeline walkthrough documented? -> Expected file not found in top 3",
+      "vector:Which file implements the ingestion API route? -> Expected file not found in top 3",
+      "hybrid:Which file implements the ingestion API route? -> Expected file not found in top 3",
+      "keyword:Which file implements the ingestion API route? -> Expected file not found in top 5"
+    ]
+  }
+}

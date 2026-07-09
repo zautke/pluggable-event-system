@@ -1,0 +1,25 @@
+{
+  "specversion": "1.0",
+  "id": "evt-loader-error-001",
+  "type": "loader.rawDocument.output.v1",
+  "source": "urn:pluggable-event-system:tests",
+  "time": "2026-07-08T12:00:02Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "status": "error",
+    "error": {
+      "code": "LOAD_NOT_FOUND",
+      "message": "The requested document was not found.",
+      "retryable": false
+    }
+  },
+  "rag_port": "rawDocument",
+  "rag_direction": "output",
+  "rag_componentkind": "rag.loader",
+  "rag_pluginname": "filesystem-loader",
+  "rag_pluginversion": "1.0.0",
+  "rag_runid": "run-001",
+  "rag_invocationid": "invoke-002",
+  "rag_idempotencykey": "project-a:load:002",
+  "rag_status": "failed"
+}

@@ -1,0 +1,12 @@
+{
+  "documentId": "doc-001",
+  "source": {
+    "uri": "file:///workspace/docs/readme.md",
+    "mediaType": "text/markdown"
+  },
+  "text": "RAG systems load documents.\n\nChunkers split content for retrieval.",
+  "mediaType": "text/markdown",
+  "metadata": {
+    "title": "RAG Notes"
+  }
+}

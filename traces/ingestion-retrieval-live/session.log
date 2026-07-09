@@ -1,0 +1,44 @@
+- Preparing proof index...
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+[Embedder] OpenAI embeddings do not support input_type="query". Using default behavior which may not be optimized for search queries. Consider using Voyage AI for query/document distinction.
+
+Indexing Proof Summary:
+──────────────────────────────────────────────────
+  Files indexed:       2
+  Chunks indexed:      2
+  Embeddings indexed:  2
+  BM25 documents:      2
+  Query runs passed:   0/19
+  Markdown evidence:   /private/tmp/test-repo-run/.repo-context/evidence/indexing-proof.md
+  JSON evidence:       /private/tmp/test-repo-run/.repo-context/evidence/indexing-proof.json
+──────────────────────────────────────────────────
+
+Proof failures:
+  1. Hybrid search acceptance failed: 0/8 runs passed (expected all).
+  2. Vector search acceptance failed: 0/8 runs passed (expected at least 6).
+  3. Keyword search acceptance failed: 0/3 runs passed (expected all).
+  4. vector:Where is the repository walker implemented? -> Expected file not found in top 3
+  5. hybrid:Where is the repository walker implemented? -> Expected file not found in top 3
+  6. keyword:Where is the repository walker implemented? -> Expected file not found in top 5
+  7. vector:How does the indexing pipeline store chunks and embeddings? -> Expected file not found in top 3
+  8. hybrid:How does the indexing pipeline store chunks and embeddings? -> Expected file not found in top 3
+  9. vector:Which file defines the SQLite chunks schema? -> Expected file not found in top 3
+  10. hybrid:Which file defines the SQLite chunks schema? -> Expected file not found in top 3
+  11. keyword:Which file defines the SQLite chunks schema? -> Expected file not found in top 5
+  12. vector:How are local Ollama embeddings fetched? -> Expected file not found in top 3
+  13. hybrid:How are local Ollama embeddings fetched? -> Expected file not found in top 3
+  14. vector:How does chunking fall back when AST parsing fails? -> Expected file not found in top 3
+  15. hybrid:How does chunking fall back when AST parsing fails? -> Expected file not found in top 3
+  16. vector:How is TSX parsing selected instead of plain TypeScript? -> Expected file not found in top 3
+  17. hybrid:How is TSX parsing selected instead of plain TypeScript? -> Expected file not found in top 3
+  18. vector:Where is the ingestion pipeline walkthrough documented? -> Expected file not found in top 3
+  19. hybrid:Where is the ingestion pipeline walkthrough documented? -> Expected file not found in top 3
+  20. vector:Which file implements the ingestion API route? -> Expected file not found in top 3
+  21. hybrid:Which file implements the ingestion API route? -> Expected file not found in top 3
+  22. keyword:Which file implements the ingestion API route? -> Expected file not found in top 5

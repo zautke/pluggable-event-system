@@ -1,0 +1,295 @@
+{
+  "generatedAt": "2026-07-08T16:46:05.421Z",
+  "startedAt": "2026-07-08T16:45:04.924Z",
+  "configFile": ".env.rag-ingestion",
+  "docsDir": "fixtures/rag-ingestion/docs",
+  "outputDir": ".sdlc/evidence/rag-ingestions",
+  "documentCount": 3,
+  "ingestionCount": 4,
+  "results": [
+    {
+      "runId": "ingest-001",
+      "configuration": {
+        "loader": "filesystem-loader",
+        "parser": "markdown-text-parser",
+        "chunker": "heading-window-chunker",
+        "embeddingProvider": "ollama-nomic-embed-provider",
+        "embedder": "nomic-backed-embedder",
+        "vectorStore": "qdrant-vectorstore",
+        "indexer": "qdrant-indexer"
+      },
+      "documents": [
+        {
+          "documentId": "incident-response",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/incident-response.md"
+        },
+        {
+          "documentId": "plugin-contracts",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/plugin-contracts.md"
+        },
+        {
+          "documentId": "vector-search",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/vector-search.md"
+        }
+      ],
+      "phases": [
+        {
+          "phase": "loader",
+          "plugin": "filesystem-loader",
+          "documents": 3
+        },
+        {
+          "phase": "parser",
+          "plugin": "markdown-text-parser",
+          "documents": 3
+        },
+        {
+          "phase": "chunker",
+          "plugin": "heading-window-chunker",
+          "chunks": 12,
+          "mode": "heading-window"
+        },
+        {
+          "phase": "embedding-provider",
+          "plugin": "ollama-nomic-embed-provider",
+          "model": "nomic-embed-text-v2-moe:latest",
+          "vectors": 12,
+          "dimension": 768
+        },
+        {
+          "phase": "embedder",
+          "plugin": "nomic-backed-embedder",
+          "vectors": 12
+        },
+        {
+          "phase": "vectorstore",
+          "plugin": "qdrant-vectorstore",
+          "store": "qdrant",
+          "url": "http://127.0.0.1:16333",
+          "collection": "pes_ingest_001",
+          "points": 12,
+          "status": "green"
+        },
+        {
+          "phase": "indexer",
+          "plugin": "qdrant-indexer",
+          "operation": "upsert",
+          "points": 12
+        }
+      ]
+    },
+    {
+      "runId": "ingest-002",
+      "configuration": {
+        "loader": "filesystem-loader",
+        "parser": "markdown-text-parser",
+        "chunker": "semantic-overlap-chunker",
+        "embeddingProvider": "ollama-bge-m3-embed-provider",
+        "embedder": "bge-m3-backed-embedder",
+        "vectorStore": "qdrant-vectorstore",
+        "indexer": "qdrant-indexer"
+      },
+      "documents": [
+        {
+          "documentId": "incident-response",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/incident-response.md"
+        },
+        {
+          "documentId": "plugin-contracts",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/plugin-contracts.md"
+        },
+        {
+          "documentId": "vector-search",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/vector-search.md"
+        }
+      ],
+      "phases": [
+        {
+          "phase": "loader",
+          "plugin": "filesystem-loader",
+          "documents": 3
+        },
+        {
+          "phase": "parser",
+          "plugin": "markdown-text-parser",
+          "documents": 3
+        },
+        {
+          "phase": "chunker",
+          "plugin": "semantic-overlap-chunker",
+          "chunks": 12,
+          "mode": "semantic-overlap"
+        },
+        {
+          "phase": "embedding-provider",
+          "plugin": "ollama-bge-m3-embed-provider",
+          "model": "bge-m3:567m",
+          "vectors": 12,
+          "dimension": 1024
+        },
+        {
+          "phase": "embedder",
+          "plugin": "bge-m3-backed-embedder",
+          "vectors": 12
+        },
+        {
+          "phase": "vectorstore",
+          "plugin": "qdrant-vectorstore",
+          "store": "qdrant",
+          "url": "http://127.0.0.1:16333",
+          "collection": "pes_ingest_002",
+          "points": 12,
+          "status": "green"
+        },
+        {
+          "phase": "indexer",
+          "plugin": "qdrant-indexer",
+          "operation": "upsert",
+          "points": 12
+        }
+      ]
+    },
+    {
+      "runId": "ingest-003",
+      "configuration": {
+        "loader": "filesystem-loader",
+        "parser": "markdown-text-parser",
+        "chunker": "heading-window-chunker",
+        "embeddingProvider": "ollama-bge-m3-embed-provider",
+        "embedder": "bge-m3-backed-embedder",
+        "vectorStore": "chromadb-vectorstore",
+        "indexer": "chromadb-indexer"
+      },
+      "documents": [
+        {
+          "documentId": "incident-response",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/incident-response.md"
+        },
+        {
+          "documentId": "plugin-contracts",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/plugin-contracts.md"
+        },
+        {
+          "documentId": "vector-search",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/vector-search.md"
+        }
+      ],
+      "phases": [
+        {
+          "phase": "loader",
+          "plugin": "filesystem-loader",
+          "documents": 3
+        },
+        {
+          "phase": "parser",
+          "plugin": "markdown-text-parser",
+          "documents": 3
+        },
+        {
+          "phase": "chunker",
+          "plugin": "heading-window-chunker",
+          "chunks": 12,
+          "mode": "heading-window"
+        },
+        {
+          "phase": "embedding-provider",
+          "plugin": "ollama-bge-m3-embed-provider",
+          "model": "bge-m3:567m",
+          "vectors": 12,
+          "dimension": 1024
+        },
+        {
+          "phase": "embedder",
+          "plugin": "bge-m3-backed-embedder",
+          "vectors": 12
+        },
+        {
+          "phase": "vectorstore",
+          "plugin": "chromadb-vectorstore",
+          "store": "chromadb",
+          "url": "http://127.0.0.1:18000",
+          "collection": "pes_ingest_003",
+          "collectionId": "8b6560af-300e-48a2-9cfc-36cf94bafba6",
+          "points": 12
+        },
+        {
+          "phase": "indexer",
+          "plugin": "chromadb-indexer",
+          "operation": "upsert",
+          "points": 12
+        }
+      ]
+    },
+    {
+      "runId": "ingest-004",
+      "configuration": {
+        "loader": "filesystem-loader",
+        "parser": "markdown-text-parser",
+        "chunker": "semantic-overlap-chunker",
+        "embeddingProvider": "ollama-nomic-embed-provider",
+        "embedder": "nomic-backed-embedder",
+        "vectorStore": "chromadb-vectorstore",
+        "indexer": "chromadb-indexer"
+      },
+      "documents": [
+        {
+          "documentId": "incident-response",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/incident-response.md"
+        },
+        {
+          "documentId": "plugin-contracts",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/plugin-contracts.md"
+        },
+        {
+          "documentId": "vector-search",
+          "uri": "file:///Volumes/MACDEV/pluggable-event-system/fixtures/rag-ingestion/docs/vector-search.md"
+        }
+      ],
+      "phases": [
+        {
+          "phase": "loader",
+          "plugin": "filesystem-loader",
+          "documents": 3
+        },
+        {
+          "phase": "parser",
+          "plugin": "markdown-text-parser",
+          "documents": 3
+        },
+        {
+          "phase": "chunker",
+          "plugin": "semantic-overlap-chunker",
+          "chunks": 12,
+          "mode": "semantic-overlap"
+        },
+        {
+          "phase": "embedding-provider",
+          "plugin": "ollama-nomic-embed-provider",
+          "model": "nomic-embed-text-v2-moe:latest",
+          "vectors": 12,
+          "dimension": 768
+        },
+        {
+          "phase": "embedder",
+          "plugin": "nomic-backed-embedder",
+          "vectors": 12
+        },
+        {
+          "phase": "vectorstore",
+          "plugin": "chromadb-vectorstore",
+          "store": "chromadb",
+          "url": "http://127.0.0.1:18000",
+          "collection": "pes_ingest_004",
+          "collectionId": "0b8ae36c-cd21-46ba-8523-7c1c31f39226",
+          "points": 12
+        },
+        {
+          "phase": "indexer",
+          "plugin": "chromadb-indexer",
+          "operation": "upsert",
+          "points": 12
+        }
+      ]
+    }
+  ]
+}

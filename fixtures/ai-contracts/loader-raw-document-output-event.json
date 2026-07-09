@@ -1,0 +1,32 @@
+{
+  "specversion": "1.0",
+  "id": "evt-loader-raw-001",
+  "type": "loader.rawDocument.output.v1",
+  "source": "urn:pluggable-event-system:tests",
+  "time": "2026-07-08T12:00:01Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "status": "success",
+    "output": {
+      "documentId": "doc-001",
+      "source": {
+        "uri": "file:///workspace/docs/readme.md",
+        "mediaType": "text/markdown"
+      },
+      "text": "RAG systems load documents.\n\nChunkers split content for retrieval.",
+      "mediaType": "text/markdown",
+      "metadata": {
+        "title": "RAG Notes"
+      }
+    }
+  },
+  "rag_port": "rawDocument",
+  "rag_direction": "output",
+  "rag_componentkind": "rag.loader",
+  "rag_pluginname": "filesystem-loader",
+  "rag_pluginversion": "1.0.0",
+  "rag_runid": "run-001",
+  "rag_invocationid": "invoke-001",
+  "rag_idempotencykey": "project-a:load:001",
+  "rag_status": "completed"
+}

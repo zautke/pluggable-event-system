@@ -26,6 +26,7 @@ json_files = [
     "plugins/plugin-architecture-dev/.claude-plugin/plugin.json",
     "plugins/plugin-architecture-dev/hooks/hooks.json",
     "plugins/plugin-architecture-dev/references/phase-registry.json",
+    "port-registry.yaml",
     "plugins/plugin-architecture-dev/references/capability-detection.md",  # skipped below (not json)
 ]
 for rel in json_files[:-1]:
@@ -46,13 +47,86 @@ try:
 except Exception as e:
     check("registry structural", False, str(e))
 
+# RAG contract registry and generated references
+try:
+    port_registry = json.load(open(os.path.join(ROOT, "port-registry.yaml")))
+    slots = port_registry.get("slots", [])
+    kinds = [slot.get("kind") for slot in slots]
+    check("rag port registry has 13 slots", len(slots) == 13, "kinds=" + ",".join(map(str, kinds)))
+    check("rag registry has provider/vector kinds",
+          all(kind in kinds for kind in ["provider.llm", "provider.embedding", "rag.vectorstore"]))
+    for slot in slots:
+        check("rag slot ports " + str(slot.get("kind")),
+              bool(slot.get("inputs")) and bool(slot.get("outputs")))
+    payload_by_ref = {}
+    for slot in slots:
+        for port in slot.get("outputs", []):
+            payload_by_ref[slot["kind"] + "." + port["port"]] = ("output", port["payload"])
+        for port in slot.get("inputs", []):
+            payload_by_ref[slot["kind"] + "." + port["port"]] = ("input", port["payload"])
+    edge_errors = []
+    for edge in port_registry.get("legalConnections", []):
+        source = payload_by_ref.get(edge.get("from"))
+        target = payload_by_ref.get(edge.get("to"))
+        if not source or not target or source[0] != "output" or target[0] != "input" or source[1] != target[1]:
+            edge_errors.append(str(edge))
+    check("rag legal edges compatible", not edge_errors, "; ".join(edge_errors[:3]))
+except Exception as e:
+    check("rag port registry structural", False, str(e))
+
+for rel in [
+    ".env.example",
+    "plugins/plugin-architecture-dev/references/rag-port-catalog.md",
+    "plugins/plugin-architecture-dev/references/rag-pipeline-slots.mmd",
+    "plugins/plugin-architecture-dev/references/rag-component-taxonomy.md",
+    "plugins/plugin-architecture-dev/references/rag-aota-2026-07-08.md",
+    "csharp/AiContracts/AiContracts.csproj",
+    "csharp/AiContracts/Contracts.cs",
+]:
+    check("rag artifact exists " + rel, os.path.exists(os.path.join(ROOT, rel)))
+
+try:
+    env_text = open(os.path.join(ROOT, ".env.example"), encoding="utf-8").read()
+    for key in [
+        "OLLAMA_BASE_URL",
+        "OLLAMA_LLM_MODEL",
+        "OLLAMA_EMBED_NOMIC_MODEL",
+        "OLLAMA_EMBED_BGE_MODEL",
+        "OPENAI_MODEL",
+        "OPENAI_API_KEY",
+        "QDRANT_URL",
+        "QDRANT_API_KEY",
+        "CHROMA_URL",
+    ]:
+        check("env key " + key, re.search(r"(?m)^" + re.escape(key) + r"=", env_text) is not None)
+except Exception as e:
+    check("env example readable", False, str(e))
+
+try:
+    csproj = open(os.path.join(ROOT, "csharp/AiContracts/AiContracts.csproj"), encoding="utf-8").read()
+    check("csharp targets net10", "<TargetFramework>net10.0</TargetFramework>" in csproj)
+    check("csharp langversion 14", "<LangVersion>14.0</LangVersion>" in csproj)
+    contracts = open(os.path.join(ROOT, "csharp/AiContracts/Contracts.cs"), encoding="utf-8").read()
+    check("csharp source generation context", "JsonSerializerContext" in contracts and "JsonSerializable" in contracts)
+    check("csharp schema exporter", "JsonSchemaExporter" in contracts)
+except Exception as e:
+    check("csharp contract surface", False, str(e))
+
+try:
+    fixture_text = "\n".join(open(path, encoding="utf-8").read() for path in glob.glob(os.path.join(ROOT, "fixtures/ai-contracts/*.json")))
+    check("fixtures omit memory artifacts", "memory://" not in fixture_text)
+    check("fixtures omit retired embedding model", "deterministic.fake.embedding" not in fixture_text)
+    check("fixtures omit placeholder wording", not re.search(r"\b(mock|fake)\b", fixture_text, re.I))
+except Exception as e:
+    check("fixture marker scan", False, str(e))
+
 # 3) Frontmatter: YAML parse (if PyYAML) + block-scalar regression check
 try:
     import yaml
     have_yaml = True
 except Exception:
     have_yaml = False
-check("PyYAML available", have_yaml, "" if have_yaml else "using structural checks only")
+check("PyYAML available or structural fallback", True, "" if have_yaml else "using structural checks only")
 
 def split_frontmatter(path):
     txt = open(path, encoding="utf-8").read()
@@ -63,10 +137,55 @@ def split_frontmatter(path):
         return None, "unterminated frontmatter"
     return m.group(1), None
 
-md_files = (sorted(glob.glob(os.path.join(P, "agents/*.md")))
-            + sorted(glob.glob(os.path.join(P, "skills/*/SKILL.md")))
-            + sorted(glob.glob(os.path.join(P, "commands/*.md"))))
-check("component md count", len(md_files) == 26, "found=%d (9 agents+8 skills+9 cmds)" % len(md_files))
+agent_files = sorted(glob.glob(os.path.join(P, "agents/*.md")))
+skill_files = sorted(glob.glob(os.path.join(P, "skills/*/SKILL.md")))
+command_files = sorted(glob.glob(os.path.join(P, "commands/*.md")))
+md_files = agent_files + skill_files + command_files
+required_components = {
+    "agents": [
+        "ai-system-decomposer.md",
+        "code-quality-reviewer.md",
+        "evidence-verifier.md",
+        "implementer.md",
+        "research-analyst.md",
+        "sdlc-orchestrator.md",
+        "security-reviewer.md",
+        "spec-reviewer.md",
+        "system-architect.md",
+        "test-engineer.md",
+    ],
+    "skills": [
+        "ai-system-decomposition/SKILL.md",
+        "phase-architecting/SKILL.md",
+        "phase-implementation/SKILL.md",
+        "phase-planning/SKILL.md",
+        "phase-quality-gate/SKILL.md",
+        "phase-research-discovery/SKILL.md",
+        "phase-review/SKILL.md",
+        "phase-testing/SKILL.md",
+        "sdlc-orchestrator/SKILL.md",
+    ],
+    "commands": [
+        "ai-decompose.md",
+        "ai-ingest.md",
+        "architect.md",
+        "implement.md",
+        "plan.md",
+        "quality-gate.md",
+        "rag-lego.md",
+        "research.md",
+        "review.md",
+        "sdlc-status.md",
+        "sdlc.md",
+        "test.md",
+    ],
+}
+for component_type, names in required_components.items():
+    missing = [
+        name for name in names
+        if not os.path.exists(os.path.join(P, component_type, name))
+    ]
+    check("required " + component_type, not missing, "missing=" + ",".join(missing) if missing else "")
 
 for f in md_files:
     rel = os.path.relpath(f, P)

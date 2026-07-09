@@ -1,0 +1,53 @@
+{
+  "name": "filesystem-loader",
+  "version": "1.0.0",
+  "kind": "rag.loader",
+  "description": "Loads source files from configured local or mounted project paths.",
+  "configSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false
+  },
+  "inputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://schemas.pluggable-event-system.local/ai/loader.input.schema.json",
+    "type": "object",
+    "properties": {
+      "loadRequest": {
+        "$ref": "https://schemas.pluggable-event-system.local/ai/LoaderLoadRequestInputEvent.schema.json"
+      }
+    },
+    "required": ["loadRequest"],
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://schemas.pluggable-event-system.local/ai/loader.output.schema.json",
+    "type": "object",
+    "properties": {
+      "sourceArtifact": {
+        "$ref": "https://schemas.pluggable-event-system.local/ai/LoaderSourceArtifactOutputEvent.schema.json"
+      },
+      "rawDocument": {
+        "$ref": "https://schemas.pluggable-event-system.local/ai/LoaderRawDocumentOutputEvent.schema.json"
+      }
+    },
+    "required": ["sourceArtifact", "rawDocument"],
+    "additionalProperties": false
+  },
+  "ports": {
+    "inputs": [{ "port": "loadRequest", "payload": "LoadRequest" }],
+    "outputs": [
+      { "port": "sourceArtifact", "payload": "ArtifactRef" },
+      { "port": "rawDocument", "payload": "RawDocument" }
+    ]
+  },
+  "effects": ["read_artifact", "compute"],
+  "annotations": {
+    "title": "Filesystem loader",
+    "idempotentHint": true,
+    "destructiveHint": false,
+    "openWorldHint": false
+  },
+  "capabilities": ["filesystem", "live", "source-loading"]
+}
