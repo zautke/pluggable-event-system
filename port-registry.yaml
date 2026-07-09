@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "2026-07-08",
+  "eventSchemaDraft": "https://json-schema.org/draft/2020-12/schema",
+  "eventNaming": "<slot>.<port>.<direction>.v<major>",
+  "slots": [
+    {
+      "kind": "rag.loader",
+      "slot": "loader",
+      "inputs": [{ "port": "loadRequest", "payload": "LoadRequest" }],
+      "outputs": [
+        { "port": "sourceArtifact", "payload": "ArtifactRef" },
+        { "port": "rawDocument", "payload": "RawDocument" }
+      ]
+    },
+    {
+      "kind": "rag.parser",
+      "slot": "parser",
+      "inputs": [{ "port": "rawDocument", "payload": "RawDocument" }],
+      "outputs": [{ "port": "parsedDocument", "payload": "ParsedDocument" }]
+    },
+    {
+      "kind": "rag.chunker",
+      "slot": "chunker",
+      "inputs": [{ "port": "parsedDocument", "payload": "ParsedDocument" }],
+      "outputs": [{ "port": "chunkSet", "payload": "ChunkSet" }]
+    },
+    {
+      "kind": "provider.embedding",
+      "slot": "embedding",
+      "inputs": [{ "port": "embeddingRequest", "payload": "EmbeddingRequest" }],
+      "outputs": [{ "port": "embeddingBatch", "payload": "EmbeddingBatch" }]
+    },
+    {
+      "kind": "rag.embedder",
+      "slot": "embedder",
+      "inputs": [
+        { "port": "chunkSet", "payload": "ChunkSet" },
+        { "port": "embeddingProvider", "payload": "EmbeddingProviderRef" }
+      ],
+      "outputs": [{ "port": "embeddingBatch", "payload": "EmbeddingBatch" }]
+    },
+    {
+      "kind": "rag.vectorstore",
+      "slot": "vectorstore",
+      "inputs": [
+        { "port": "collectionRequest", "payload": "CollectionRequest" },
+        { "port": "indexMutation", "payload": "IndexMutation" },
+        { "port": "vectorQuery", "payload": "VectorQuery" }
+      ],
+      "outputs": [
+        { "port": "collectionRef", "payload": "CollectionRef" },
+        { "port": "candidateSet", "payload": "CandidateSet" }
+      ]
+    },
+    {
+      "kind": "rag.indexer",
+      "slot": "indexer",
+      "inputs": [
+        { "port": "chunkSet", "payload": "ChunkSet" },
+        { "port": "embeddingBatch", "payload": "EmbeddingBatch" },
+        { "port": "vectorStore", "payload": "CollectionRef" }
+      ],
+      "outputs": [
+        { "port": "indexMutation", "payload": "IndexMutation" },
+        { "port": "collectionRef", "payload": "CollectionRef" }
+      ]
+    },
+    {
+      "kind": "rag.retriever",
+      "slot": "retriever",
+      "inputs": [
+        { "port": "retrievalQuery", "payload": "RetrievalQuery" },
+        { "port": "embeddingProvider", "payload": "EmbeddingProviderRef" },
+        { "port": "vectorStore", "payload": "CollectionRef" }
+      ],
+      "outputs": [{ "port": "candidateSet", "payload": "CandidateSet" }]
+    },
+    {
+      "kind": "rag.reranker",
+      "slot": "reranker",
+      "inputs": [
+        { "port": "retrievalQuery", "payload": "RetrievalQuery" },
+        { "port": "candidateSet", "payload": "CandidateSet" },
+        { "port": "llmProvider", "payload": "LlmProviderRef" }
+      ],
+      "outputs": [{ "port": "rerankedSet", "payload": "RerankedSet" }]
+    },
+    {
+      "kind": "provider.llm",
+      "slot": "llm",
+      "inputs": [{ "port": "llmRequest", "payload": "LlmRequest" }],
+      "outputs": [{ "port": "llmResponse", "payload": "LlmResponse" }]
+    },
+    {
+      "kind": "rag.generator",
+      "slot": "generator",
+      "inputs": [
+        { "port": "generationRequest", "payload": "GenerationRequest" },
+        { "port": "rerankedSet", "payload": "RerankedSet" },
+        { "port": "llmProvider", "payload": "LlmProviderRef" }
+      ],
+      "outputs": [
+        { "port": "answer", "payload": "Answer" },
+        { "port": "generationContext", "payload": "GenerationContext" }
+      ]
+    },
+    {
+      "kind": "rag.evaluator",
+      "slot": "evaluator",
+      "inputs": [
+        { "port": "evaluationRequest", "payload": "EvaluationRequest" },
+        { "port": "generationContext", "payload": "GenerationContext" },
+        { "port": "llmProvider", "payload": "LlmProviderRef" }
+      ],
+      "outputs": [{ "port": "evaluationRecord", "payload": "EvaluationRecord" }]
+    },
+    {
+      "kind": "observability.sink",
+      "slot": "observability",
+      "inputs": [{ "port": "telemetryEvent", "payload": "TelemetryEvent" }],
+      "outputs": [{ "port": "artifactRef", "payload": "ArtifactRef" }]
+    }
+  ],
+  "legalConnections": [
+    { "from": "rag.loader.rawDocument", "to": "rag.parser.rawDocument" },
+    { "from": "rag.parser.parsedDocument", "to": "rag.chunker.parsedDocument" },
+    { "from": "rag.chunker.chunkSet", "to": "rag.embedder.chunkSet" },
+    { "from": "rag.chunker.chunkSet", "to": "rag.indexer.chunkSet" },
+    { "from": "rag.embedder.embeddingBatch", "to": "rag.indexer.embeddingBatch" },
+    { "from": "rag.indexer.indexMutation", "to": "rag.vectorstore.indexMutation" },
+    { "from": "rag.indexer.collectionRef", "to": "rag.retriever.vectorStore" },
+    { "from": "rag.vectorstore.collectionRef", "to": "rag.indexer.vectorStore" },
+    { "from": "rag.vectorstore.collectionRef", "to": "rag.retriever.vectorStore" },
+    { "from": "rag.vectorstore.candidateSet", "to": "rag.reranker.candidateSet" },
+    { "from": "rag.retriever.candidateSet", "to": "rag.reranker.candidateSet" },
+    { "from": "rag.reranker.rerankedSet", "to": "rag.generator.rerankedSet" },
+    { "from": "rag.generator.generationContext", "to": "rag.evaluator.generationContext" }
+  ]
+}
