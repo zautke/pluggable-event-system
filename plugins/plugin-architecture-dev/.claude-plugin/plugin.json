@@ -18,7 +18,12 @@
     "research",
     "planning",
     "architecture",
-    "testing"
+    "testing",
+    "ai-engineering",
+    "rag",
+    "json-schema",
+    "pydantic",
+    "zod"
   ],
   "hooks": "./hooks/hooks.json"
 }

@@ -1,0 +1,32 @@
+flowchart LR
+  Loader["rag.loader"]
+  Parser["rag.parser"]
+  Chunker["rag.chunker"]
+  EmbeddingProvider["provider.embedding"]
+  Embedder["rag.embedder"]
+  VectorStore["rag.vectorstore"]
+  Indexer["rag.indexer"]
+  Retriever["rag.retriever"]
+  Reranker["rag.reranker"]
+  LlmProvider["provider.llm"]
+  Generator["rag.generator"]
+  Evaluator["rag.evaluator"]
+  Observability["observability.sink"]
+
+  Loader -->|"loader.rawDocument.output.v1 / RawDocument"| Parser
+  Parser -->|"parser.parsedDocument.output.v1 / ParsedDocument"| Chunker
+  Chunker -->|"chunker.chunkSet.output.v1 / ChunkSet"| Embedder
+  Chunker -->|"chunker.chunkSet.output.v1 / ChunkSet"| Indexer
+  EmbeddingProvider -.->|"embedding.embeddingBatch.output.v1 / EmbeddingBatch"| Embedder
+  Embedder -->|"embedder.embeddingBatch.output.v1 / EmbeddingBatch"| Indexer
+  Indexer -->|"indexer.indexMutation.output.v1 / IndexMutation"| VectorStore
+  VectorStore -->|"vectorstore.collectionRef.output.v1 / CollectionRef"| Indexer
+  VectorStore -->|"vectorstore.collectionRef.output.v1 / CollectionRef"| Retriever
+  VectorStore -->|"vectorstore.candidateSet.output.v1 / CandidateSet"| Reranker
+  Retriever -->|"retriever.candidateSet.output.v1 / CandidateSet"| Reranker
+  LlmProvider -.->|"llm.llmResponse.output.v1 / LlmResponse"| Reranker
+  Reranker -->|"reranker.rerankedSet.output.v1 / RerankedSet"| Generator
+  LlmProvider -.->|"llm.llmResponse.output.v1 / LlmResponse"| Generator
+  Generator -->|"generator.generationContext.output.v1 / GenerationContext"| Evaluator
+  Generator -.->|"generator.answer.output.v1 / Answer"| Observability
+  Evaluator -.->|"evaluator.evaluationRecord.output.v1 / EvaluationRecord"| Observability
