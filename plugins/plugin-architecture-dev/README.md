@@ -101,6 +101,36 @@ program; **desktop** → computer-use screenshots. Full playbook in
 | `/research`, `/plan`, `/architect`, `/implement`, `/review`, `/test`, `/quality-gate` | Run a single phase directly |
 | `/sdlc-status` | Print the current run state from `.sdlc/` |
 | `/sdlc-status --abort [reason]` | End a stuck run: log it and clear the hard gate (no faked evidence) |
+| `/ai-ingest` | Create or validate a typed `ProjectSnapshot` for AI engineering work |
+| `/ai-decompose` | Turn a project snapshot into a typed plugin `ComponentGraph` |
+| `/rag-lego` | Scaffold or explain the deterministic pluggable RAG component pipeline |
+
+## AI engineering contracts
+
+This plugin now includes a concrete AI-engineering use case: reusable contracts for project
+ingestion, component decomposition, and RAG pipeline stages.
+
+- TypeScript package: `packages/ai-contracts`. Zod v4 schemas are canonical and export JSON Schema
+  Draft 2020-12 wire contracts.
+- Python parity: `python/ai_contracts`. Pydantic v2 models validate the same shared fixtures.
+- Fixtures: `fixtures/ai-contracts`. These cover descriptors, invocations, results, and a mock RAG
+  document.
+- References: `references/ai-engineering-contracts.md` and
+  `references/rag-component-taxonomy.md`.
+
+The RAG lego example is intentionally local-light: loader -> parser -> chunker -> embedder ->
+indexer and query -> retriever -> reranker -> generator -> evaluator. Embeddings are deterministic
+fake vectors, artifact refs are `memory://`, and compatibility is verified by matching each
+component output schema to the next input schema.
+
+Validation:
+
+```
+npm test
+npm run build
+python -m pytest python/ai_contracts/tests
+python .sdlc_validate.py
+```
 
 ## Hooks
 
@@ -151,9 +181,9 @@ architect/review phases apply to *your* extensible targets (`references/pluggabl
 ```
 plugin-architecture-dev/
 ├─ .claude-plugin/plugin.json
-├─ skills/            sdlc-orchestrator + 7 phase skills
-├─ commands/          9 thin command spawns
-├─ agents/            9 roster members
+├─ skills/            sdlc-orchestrator + 7 phase skills + AI decomposition skill
+├─ commands/          SDLC commands + AI engineering contract commands
+├─ agents/            roster members + AI system decomposer
 ├─ hooks/             hooks.json + run-hook.cmd polyglot + 3 scripts + phase-index.txt
 └─ references/        registry, rosters, principles, evidence playbook, capability map
 ```

@@ -14,6 +14,11 @@ It is itself **internally pluggable** (the repo's namesake): phases are contribu
 are the event bus, and capability detection lazily activates optional accelerators (codemunch,
 basic-memory, chrome, gemini, codex) — each with a portable fallback, so no external MCP is required.
 
+The repository also contains the first concrete AI-engineering scaffold for that plugin:
+`packages/ai-contracts` defines Zod-first JSON Schema contracts, `python/ai_contracts` mirrors them
+with Pydantic v2, and shared fixtures exercise a deterministic RAG lego pipeline with no local model
+downloads or external services.
+
 Full documentation: **[plugins/plugin-architecture-dev/README.md](plugins/plugin-architecture-dev/README.md)**.
 
 ## Install
@@ -34,6 +39,9 @@ Start a new session, then:
 ```
 .
 ├─ .claude-plugin/marketplace.json    # marketplace manifest (one plugin entry)
+├─ packages/ai-contracts/             # TypeScript Zod contract package
+├─ python/ai_contracts/               # Python Pydantic parity package
+├─ fixtures/ai-contracts/             # Shared contract fixtures
 ├─ README.md                          # this file
 └─ plugins/
    └─ plugin-architecture-dev/        # the plugin (see its README)
